@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/xxyijixx/dootask-golang-sdk/api/file"
 	ihttp "github.com/xxyijixx/dootask-golang-sdk/internal/http"
 )
 
@@ -17,7 +18,7 @@ type Client struct {
 	Config     *Config
 
 	// Service modules
-
+	File *file.Service
 }
 
 // NewClient creates a new API client
@@ -43,6 +44,7 @@ func NewClientWithConfig(baseURL string, config *Config) *Client {
 	}
 
 	// Initialize service modules
+	client.File = file.New(client)
 
 	return client
 }
