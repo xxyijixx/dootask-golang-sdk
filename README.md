@@ -114,6 +114,33 @@ func main() {
     }
 
     fmt.Printf("用户: %s (%s)\n", user.Name, user.Email)
+
+    // 使用对话模块
+    // 创建对话
+    createReq := &types.CreateDialogRequest{
+        Name:        "测试对话",
+        Description: "这是一个测试对话",
+        Type:        1,              // 群组对话
+        Members:     []int{1, 2, 3}, // 成员ID列表
+    }
+
+    dialog, err := client.Dialog.CreateDialog(createReq)
+    if err != nil {
+        log.Fatalf("创建对话失败: %v", err)
+    }
+    fmt.Printf("创建对话成功: %+v\n", dialog.Data)
+
+    // 发送消息
+    messageReq := &types.SendMessageRequest{
+        Type:    1, // 文本消息
+        Content: "Hello, World!",
+    }
+
+    message, err := client.Dialog.SendMessage(dialog.Data.ID, messageReq)
+    if err != nil {
+        log.Fatalf("发送消息失败: %v", err)
+    }
+    fmt.Printf("发送消息成功: %+v\n", message.Data)
 }
 ```
 
@@ -151,7 +178,7 @@ func main() {
 | users     | 用户管理       | 🔄 开发中 | ⭐⭐⭐ |
 | project   | 项目管理       | ⏳ 待开发 | ⭐⭐⭐ |
 | system    | 系统配置       | ⏳ 待开发 | ⭐⭐⭐ |
-| dialog    | 对话管理       | ⏳ 待开发 | ⭐⭐  |
+| dialog    | 对话管理       | ✅ 已完成 | ⭐⭐  |
 | file      | 文件管理       | ⏳ 待开发 | ⭐⭐  |
 | report    | 汇报管理       | ⏳ 待开发 | ⭐⭐  |
 | public    | 公共接口       | ⏳ 待开发 | ⭐    |
@@ -214,6 +241,31 @@ func main() {
 - `Info() (*SystemInfo, error)` - 获取系统信息
 - `Version() (*VersionInfo, error)` - 获取版本信息
 
+### 对话模块 (Dialog API)
+
+#### 对话管理
+- `CreateDialog(request *CreateDialogRequest) (*DialogDetailResponse, error)` - 创建对话
+- `GetDialogList(request *DialogListRequest) (*DialogListResponse, error)` - 获取对话列表
+- `GetDialogDetail(dialogID int) (*DialogDetailResponse, error)` - 获取对话详情
+- `UpdateDialog(dialogID int, request *UpdateDialogRequest) (*DialogDetailResponse, error)` - 更新对话
+- `DeleteDialog(dialogID int) error` - 删除对话
+
+#### 对话成员管理
+- `GetDialogMembers(dialogID int) (*DialogMembersResponse, error)` - 获取对话成员
+- `AddDialogMembers(dialogID int, request *AddMemberRequest) (*DialogMembersResponse, error)` - 添加成员
+- `RemoveDialogMembers(dialogID int, request *RemoveMemberRequest) error` - 移除成员
+
+#### 消息管理
+- `SendMessage(dialogID int, request *SendMessageRequest) (*DialogMessageResponse, error)` - 发送消息
+- `GetDialogMessages(dialogID int, request *DialogMessagesRequest) (*DialogMessagesResponse, error)` - 获取消息列表
+- `MarkMessagesAsRead(dialogID int, messageIDs []int) error` - 标记消息为已读
+- `DeleteMessage(dialogID, messageID int) error` - 删除消息
+
+#### 对话设置
+- `SetDialogTop(dialogID int, isTop bool) error` - 设置对话置顶
+- `SetDialogMute(dialogID int, isMute bool) error` - 设置对话静音
+- `ArchiveDialog(dialogID int, isArchive bool) error` - 归档对话
+
 ## 数据模型
 
 ### 通用模型
@@ -232,6 +284,16 @@ func main() {
 - `Project` - 项目信息
 - `Task` - 任务信息
 - `ProjectUser` - 项目成员关系
+
+### 对话模型
+- `Dialog` - 对话信息
+- `DialogMember` - 对话成员
+- `DialogMessage` - 对话消息
+- `CreateDialogRequest` - 创建对话请求
+- `UpdateDialogRequest` - 更新对话请求
+- `SendMessageRequest` - 发送消息请求
+- `DialogListRequest/Response` - 对话列表相关
+- `DialogMessagesRequest/Response` - 消息列表相关
 
 ## 错误处理
 

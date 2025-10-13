@@ -1,11 +1,11 @@
 package file
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 
+	ihttp "github.com/xxyijixx/dootask-golang-sdk/internal/http"
 	"github.com/xxyijixx/dootask-golang-sdk/types"
 )
 
@@ -27,21 +27,13 @@ func (s *Service) DownloadPack(ids []int, name *string) (map[string]interface{},
 	}
 	defer resp.Body.Close()
 
-	var result struct {
-		Ret  int                    `json:"ret"`
-		Msg  string                 `json:"msg"`
-		Data map[string]interface{} `json:"data"`
+	var result map[string]interface{}
+	err = ihttp.ParseAPIResponse(resp, &result)
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
-	}
-
-	if result.Ret != 1 {
-		return nil, fmt.Errorf("API error: %s", result.Msg)
-	}
-
-	return result.Data, nil
+	return result, nil
 }
 
 // DownloadPackFile 下载打包文件 (通过key)
