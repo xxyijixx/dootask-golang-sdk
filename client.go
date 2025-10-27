@@ -9,6 +9,7 @@ import (
 	"github.com/xxyijixx/dootask-golang-sdk/api/dialog"
 	"github.com/xxyijixx/dootask-golang-sdk/api/file"
 	"github.com/xxyijixx/dootask-golang-sdk/api/project"
+	"github.com/xxyijixx/dootask-golang-sdk/api/report"
 	ihttp "github.com/xxyijixx/dootask-golang-sdk/internal/http"
 )
 
@@ -23,6 +24,7 @@ type Client struct {
 	File    *file.Service
 	Dialog  *dialog.Service
 	Project *project.Service
+	Report  *report.Service
 }
 
 // NewClient creates a new API client
@@ -51,6 +53,7 @@ func NewClientWithConfig(baseURL string, config *Config) *Client {
 	client.File = file.New(client)
 	client.Dialog = dialog.New(client)
 	client.Project = project.New(client)
+	client.Report = report.New(client)
 
 	return client
 }
