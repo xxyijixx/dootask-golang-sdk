@@ -369,11 +369,9 @@ type ProjectTaskDialogRequest struct {
 }
 
 type ProjectTaskDialogResponse struct {
-	Data TaskDialogData `json:"data"`
-}
-
-type TaskDialogData struct {
-	DialogID int `json:"dialog_id"`
+	ID         int        `json:"id"`
+	DialogID   int        `json:"dialog_id"`
+	DialogData DialogItem `json:"dialog_data"`
 }
 
 // ProjectTaskArchivedRequest 34. 归档任务
