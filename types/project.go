@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // ==================== 项目管理相关 ====================
 
 // ProjectListsRequest 01. 获取项目列表
@@ -11,7 +16,21 @@ type ProjectListsRequest struct {
 }
 
 type ProjectListsResponse struct {
-	Data []ProjectInfo `json:"data"`
+	CurrentPage  int           `json:"current_page"`
+	Data         []ProjectInfo `json:"data"`
+	FirstPageUrl *string       `json:"first_page_url,omitempty"`
+	From         *int          `json:"from,omitempty"`
+	LastPage     int           `json:"last_page"`
+	LastPageUrl  *string       `json:"last_page_url,omitempty"`
+	Links        []interface{} `json:"links,omitempty"`
+	NextPageUrl  *string       `json:"next_page_url,omitempty"`
+	Path         string        `json:"path"`
+	PerPage      int           `json:"per_page"`
+	PrevPageUrl  *string       `json:"prev_page_url,omitempty"`
+	To           *int          `json:"to,omitempty"`
+	Total        int           `json:"total"`
+	TotalAll     int           `json:"total_all,omitempty"`
+	DeletedID    []int         `json:"deleted_id,omitempty"`
 }
 
 type ProjectInfo struct {
@@ -19,7 +38,7 @@ type ProjectInfo struct {
 	Name          string    `json:"name"`
 	Desc          string    `json:"desc"`
 	DialogID      int       `json:"dialog_id"`
-	Owner         []int     `json:"owner"`
+	Owner         int       `json:"owner"`
 	OwnerUser     []User    `json:"owner_user"`
 	CreatedAt     DateTime  `json:"created_at"`
 	UpdatedAt     DateTime  `json:"updated_at"`
@@ -36,16 +55,14 @@ type ProjectOneRequest struct {
 	ProjectID int `json:"project_id"` // 项目ID
 }
 
-type ProjectOneResponse struct {
-	Data ProjectDetail `json:"data"`
-}
+type ProjectOneResponse ProjectDetail
 
 type ProjectDetail struct {
 	ID            int             `json:"id"`
 	Name          string          `json:"name"`
 	Desc          string          `json:"desc"`
 	DialogID      int             `json:"dialog_id"`
-	Owner         []int           `json:"owner"`
+	Owner         int             `json:"owner"`
 	OwnerUser     []User          `json:"owner_user"`
 	CreatedAt     DateTime        `json:"created_at"`
 	UpdatedAt     DateTime        `json:"updated_at"`
@@ -86,8 +103,24 @@ type ProjectAddRequest struct {
 	Personal bool     `json:"personal,omitempty"` // 是否创建个人项目
 }
 
-type ProjectAddResponse struct {
-	Data ProjectDetail `json:"data"`
+// ProjectAddResponse 支持数组和对象两种格式
+type ProjectAddResponse ProjectDetail
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (p *ProjectAddResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ProjectDetail
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*p = ProjectAddResponse(arr[0])
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ProjectDetail
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*p = ProjectAddResponse(obj)
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ProjectAddResponse")
 }
 
 // ProjectUpdateRequest 04. 修改项目
@@ -100,7 +133,22 @@ type ProjectUpdateRequest struct {
 }
 
 type ProjectUpdateResponse struct {
-	Data ProjectDetail `json:"data"`
+	ID            int             `json:"id"`
+	Name          string          `json:"name"`
+	Desc          string          `json:"desc"`
+	DialogID      int             `json:"dialog_id"`
+	Owner         IntArray        `json:"owner"`
+	OwnerUser     []User          `json:"owner_user"`
+	CreatedAt     DateTime        `json:"created_at"`
+	UpdatedAt     DateTime        `json:"updated_at"`
+	ArchivedAt    *DateTime       `json:"archived_at,omitempty"`
+	TopAt         *DateTime       `json:"top_at,omitempty"`
+	Personal      int             `json:"personal"`
+	Flow          string          `json:"flow"`
+	ArchiveDays   int             `json:"archive_days"`
+	ArchiveMethod string          `json:"archive_method"`
+	Columns       []ProjectColumn `json:"columns"`
+	Members       []ProjectMember `json:"project_user"`
 }
 
 // ProjectTransferRequest 09. 移交项目
@@ -203,9 +251,7 @@ type ProjectColumnListsRequest struct {
 	ProjectID int `json:"project_id"` // 项目ID
 }
 
-type ProjectColumnListsResponse struct {
-	Data []ProjectColumn `json:"data"`
-}
+type ProjectColumnListsResponse []ProjectColumn
 
 // ProjectColumnAddRequest 15. 添加任务列表
 type ProjectColumnAddRequest struct {
@@ -214,9 +260,7 @@ type ProjectColumnAddRequest struct {
 	Color     string `json:"color,omitempty"` // 颜色
 }
 
-type ProjectColumnAddResponse struct {
-	Data ProjectColumn `json:"data"`
-}
+type ProjectColumnAddResponse ProjectColumn
 
 // ProjectColumnUpdateRequest 16. 修改任务列表
 type ProjectColumnUpdateRequest struct {
@@ -225,9 +269,7 @@ type ProjectColumnUpdateRequest struct {
 	Color    string `json:"color,omitempty"` // 颜色
 }
 
-type ProjectColumnUpdateResponse struct {
-	Data ProjectColumn `json:"data"`
-}
+type ProjectColumnUpdateResponse ProjectColumn
 
 // ProjectColumnRemoveRequest 17. 删除任务列表
 type ProjectColumnRemoveRequest struct {
@@ -243,9 +285,7 @@ type ProjectColumnOneRequest struct {
 	ColumnID int `json:"column_id"` // 列ID
 }
 
-type ProjectColumnOneResponse struct {
-	Data ProjectColumn `json:"data"`
-}
+type ProjectColumnOneResponse ProjectColumn
 
 // ==================== 任务管理 ====================
 
@@ -261,9 +301,7 @@ type ProjectTaskListsRequest struct {
 	Pagesize  int    `json:"pagesize,omitempty"`   // 每页数量
 }
 
-type ProjectTaskListsResponse struct {
-	Data []TaskInfo `json:"data"`
-}
+type ProjectTaskListsResponse []TaskInfo
 
 type TaskInfo struct {
 	ID         int        `json:"id"`
@@ -294,27 +332,21 @@ type ProjectTaskEasyListsRequest struct {
 	Status    string `json:"status,omitempty"`     // 状态
 }
 
-type ProjectTaskEasyListsResponse struct {
-	Data []TaskInfo `json:"data"`
-}
+type ProjectTaskEasyListsResponse []TaskInfo
 
 // ProjectTaskOneRequest 24. 获取单个任务信息
 type ProjectTaskOneRequest struct {
 	TaskID int `json:"task_id"` // 任务ID
 }
 
-type ProjectTaskOneResponse struct {
-	Data TaskInfo `json:"data"`
-}
+type ProjectTaskOneResponse TaskInfo
 
 // ProjectTaskContentRequest 25. 获取任务详细描述
 type ProjectTaskContentRequest struct {
 	TaskID int `json:"task_id"` // 任务ID
 }
 
-type ProjectTaskContentResponse struct {
-	Data TaskContent `json:"data"`
-}
+type ProjectTaskContentResponse TaskContent
 
 type TaskContent struct {
 	Content string `json:"content"`
@@ -332,9 +364,7 @@ type ProjectTaskAddRequest struct {
 	EndAt     string `json:"end_at,omitempty"`   // 结束时间
 }
 
-type ProjectTaskAddResponse struct {
-	Data TaskInfo `json:"data"`
-}
+type ProjectTaskAddResponse TaskInfo
 
 // ProjectTaskAddSubRequest 31. 添加子任务
 type ProjectTaskAddSubRequest struct {
@@ -342,9 +372,7 @@ type ProjectTaskAddSubRequest struct {
 	Name   string `json:"name"`    // 子任务名称
 }
 
-type ProjectTaskAddSubResponse struct {
-	Data TaskInfo `json:"data"`
-}
+type ProjectTaskAddSubResponse TaskInfo
 
 // ProjectTaskUpdateRequest 32. 修改任务、子任务
 type ProjectTaskUpdateRequest struct {
@@ -359,9 +387,7 @@ type ProjectTaskUpdateRequest struct {
 	CompleteAt interface{} `json:"complete_at,omitempty"` // 完成时间，传时间字符串标记完成，传false标记未完成
 }
 
-type ProjectTaskUpdateResponse struct {
-	Data TaskInfo `json:"data"`
-}
+type ProjectTaskUpdateResponse TaskInfo
 
 // ProjectTaskDialogRequest 33. 创建/获取聊天室
 type ProjectTaskDialogRequest struct {
@@ -602,4 +628,252 @@ type User struct {
 	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
+}
+
+// ==================== 项目权限管理 ====================
+
+// ProjectPermissionRequest 44. 获取项目权限设置
+type ProjectPermissionRequest struct {
+	ProjectID int `json:"project_id"` // 项目ID
+}
+
+type ProjectPermissionResponse struct {
+	Data map[string]interface{} `json:"data"`
+}
+
+// ProjectPermissionUpdateRequest 45. 项目权限设置
+type ProjectPermissionUpdateRequest struct {
+	ProjectID      int   `json:"project_id"`                 // 项目ID
+	TaskListAdd    []int `json:"task_list_add,omitempty"`    // 添加任务列表权限
+	TaskListUpdate []int `json:"task_list_update,omitempty"` // 修改任务列表权限
+	TaskListRemove []int `json:"task_list_remove,omitempty"` // 删除任务列表权限
+	TaskListSort   []int `json:"task_list_sort,omitempty"`   // 排序任务列表权限
+	TaskAdd        []int `json:"task_add,omitempty"`         // 添加任务权限
+	TaskUpdate     []int `json:"task_update,omitempty"`      // 修改任务权限
+	TaskTime       []int `json:"task_time,omitempty"`        // 修改任务时间权限
+	TaskStatus     []int `json:"task_status,omitempty"`      // 修改任务状态权限
+	TaskRemove     []int `json:"task_remove,omitempty"`      // 删除任务权限
+	TaskArchived   []int `json:"task_archived,omitempty"`    // 归档任务权限
+	TaskMove       []int `json:"task_move,omitempty"`        // 移动任务权限
+}
+
+type ProjectPermissionUpdateResponse struct {
+	Data map[string]interface{} `json:"data"`
+}
+
+// ==================== 标签管理 ====================
+
+// ProjectTagListRequest 47. 标签列表
+type ProjectTagListRequest struct {
+	ProjectID int `json:"project_id"` // 项目ID
+}
+
+type ProjectTagListResponse []ProjectTag
+
+type ProjectTag struct {
+	ID        int      `json:"id"`
+	ProjectID int      `json:"project_id"`
+	Name      string   `json:"name"`
+	Desc      string   `json:"desc"`
+	Color     string   `json:"color"`
+	UserID    int      `json:"userid"`
+	Sort      int      `json:"sort"`
+	CreatedAt DateTime `json:"created_at"`
+	UpdatedAt DateTime `json:"updated_at"`
+}
+
+// ProjectTagSaveRequest 48. 保存标签
+type ProjectTagSaveRequest struct {
+	ProjectID int    `json:"project_id"`     // 项目ID
+	ID        int    `json:"id,omitempty"`   // 标签ID（修改时传）
+	Name      string `json:"name"`           // 标签名称
+	Desc      string `json:"desc,omitempty"` // 标签描述
+	Color     string `json:"color"`          // 标签颜色
+}
+
+type ProjectTagSaveResponse ProjectTag
+
+// ProjectTagSortRequest 49. 标签排序
+type ProjectTagSortRequest struct {
+	ProjectID int   `json:"project_id"` // 项目ID
+	List      []int `json:"list"`       // 标签ID列表，按新顺序排列
+}
+
+type ProjectTagSortResponse struct {
+	Data string `json:"data"`
+}
+
+// ProjectTagDeleteRequest 46. 删除标签
+type ProjectTagDeleteRequest struct {
+	ID int `json:"id"` // 标签ID
+}
+
+type ProjectTagDeleteResponse struct {
+	Data string `json:"data"`
+}
+
+// ==================== 任务历史与关联 ====================
+
+// ProjectTaskContentHistoryRequest 50. 获取任务详细历史描述
+type ProjectTaskContentHistoryRequest struct {
+	TaskID   int `json:"task_id"`            // 任务ID
+	Page     int `json:"page,omitempty"`     // 页码
+	Pagesize int `json:"pagesize,omitempty"` // 每页数量
+}
+
+type ProjectTaskContentHistoryResponse []TaskContentHistory
+
+type TaskContentHistory struct {
+	ID        int      `json:"id"`
+	TaskID    int      `json:"task_id"`
+	Desc      string   `json:"desc"`
+	UserID    int      `json:"userid"`
+	CreatedAt DateTime `json:"created_at"`
+}
+
+// ProjectTaskCopyRequest 51. 复制任务
+type ProjectTaskCopyRequest struct {
+	TaskID     int    `json:"task_id"`             // 任务ID
+	ProjectID  int    `json:"project_id"`          // 目标项目ID
+	ColumnID   int    `json:"column_id"`           // 目标列表ID
+	FlowItemID int    `json:"flow_item_id"`        // 工作流ID
+	Owner      []int  `json:"owner"`               // 负责人
+	Assist     []int  `json:"assist"`              // 协助人
+	Completed  string `json:"completed,omitempty"` // 是否已完成（仅在没有工作流时生效）
+}
+
+type ProjectTaskCopyResponse TaskInfo
+
+// ProjectTaskRelatedRequest 52. 获取任务关联任务列表
+type ProjectTaskRelatedRequest struct {
+	TaskID int `json:"task_id"` // 任务ID
+}
+
+type ProjectTaskRelatedResponse struct {
+	Data TaskRelatedData `json:"data"`
+}
+
+type TaskRelatedData struct {
+	TaskID int               `json:"task_id"`
+	List   []TaskRelatedItem `json:"list"`
+}
+
+type TaskRelatedItem struct {
+	TaskID        int                 `json:"task_id"`
+	RelatedTaskID int                 `json:"related_task_id"`
+	Mention       bool                `json:"mention"`
+	MentionedBy   bool                `json:"mentioned_by"`
+	LatestMsgID   int                 `json:"latest_msg_id"`
+	LatestAt      *DateTime           `json:"latest_at,omitempty"`
+	Task          TaskRelatedTaskInfo `json:"task"`
+}
+
+type TaskRelatedTaskInfo struct {
+	ID             int       `json:"id"`
+	Name           string    `json:"name"`
+	ProjectID      int       `json:"project_id"`
+	ProjectName    string    `json:"project_name"`
+	ColumnID       int       `json:"column_id"`
+	ColumnName     string    `json:"column_name"`
+	CompleteAt     *DateTime `json:"complete_at,omitempty"`
+	ArchivedAt     *DateTime `json:"archived_at,omitempty"`
+	FlowItemName   string    `json:"flow_item_name"`
+	FlowItemStatus string    `json:"flow_item_status"`
+	FlowItemColor  string    `json:"flow_item_color"`
+}
+
+// ProjectTaskSubdataRequest 53. 获取子任务数据
+type ProjectTaskSubdataRequest struct {
+	TaskID int `json:"task_id"` // 任务ID
+}
+
+type ProjectTaskSubdataResponse TaskSubdata
+
+type TaskSubdata struct {
+	ID          int `json:"id"`
+	SubNum      int `json:"sub_num"`
+	SubComplete int `json:"sub_complete"`
+	Percent     int `json:"percent"`
+}
+
+// ==================== 任务模板管理 ====================
+
+// ProjectTaskTemplateListRequest 56. 任务模板列表
+type ProjectTaskTemplateListRequest struct {
+	ProjectID int `json:"project_id"` // 项目ID
+}
+
+type ProjectTaskTemplateListResponse []TaskTemplate
+
+type TaskTemplate struct {
+	ID        int      `json:"id"`
+	ProjectID int      `json:"project_id"`
+	Name      string   `json:"name"`
+	Title     string   `json:"title"`
+	Content   string   `json:"content"`
+	UserID    int      `json:"userid"`
+	Sort      int      `json:"sort"`
+	IsDefault bool     `json:"is_default"`
+	CreatedAt DateTime `json:"created_at"`
+	UpdatedAt DateTime `json:"updated_at"`
+}
+
+// ProjectTaskTemplateSaveRequest 57. 保存任务模板
+type ProjectTaskTemplateSaveRequest struct {
+	ProjectID int    `json:"project_id"`   // 项目ID
+	ID        int    `json:"id,omitempty"` // 模板ID（修改时传）
+	Name      string `json:"name"`         // 模板名称
+	Title     string `json:"title"`        // 任务标题
+	Content   string `json:"content"`      // 任务内容
+}
+
+type ProjectTaskTemplateSaveResponse TaskTemplate
+
+// ProjectTaskTemplateSortRequest 58. 排序任务模板
+type ProjectTaskTemplateSortRequest struct {
+	ProjectID int   `json:"project_id"` // 项目ID
+	List      []int `json:"list"`       // 模板ID列表，按新顺序排列
+}
+
+type ProjectTaskTemplateSortResponse struct {
+	Data string `json:"data"`
+}
+
+// ProjectTaskTemplateDeleteRequest 55. 删除任务模板
+type ProjectTaskTemplateDeleteRequest struct {
+	ID int `json:"id"` // 模板ID
+}
+
+type ProjectTaskTemplateDeleteResponse struct {
+	Data string `json:"data"`
+}
+
+// ProjectTaskTemplateDefaultRequest 54. 设置(取消)任务模板为默认
+type ProjectTaskTemplateDefaultRequest struct {
+	ID        int `json:"id"`         // 模板ID
+	ProjectID int `json:"project_id"` // 项目ID
+}
+
+type ProjectTaskTemplateDefaultResponse struct {
+	Data string `json:"data"`
+}
+
+// ==================== 任务操作 ====================
+
+// ProjectTaskUpgradeRequest 59. 子任务升级为主任务
+type ProjectTaskUpgradeRequest struct {
+	TaskID int `json:"task_id"` // 子任务ID
+}
+
+type ProjectTaskUpgradeResponse TaskInfo
+
+// ==================== 项目排序 ====================
+
+// ProjectUserSortRequest 60. 项目列表排序
+type ProjectUserSortRequest struct {
+	List []int `json:"list"` // 排序后的项目ID列表
+}
+
+type ProjectUserSortResponse struct {
+	Data string `json:"data"`
 }

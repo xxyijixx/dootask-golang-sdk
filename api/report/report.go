@@ -198,3 +198,39 @@ func (s *Service) GetLastSubmitter(req *types.ReportLastSubmitterRequest) (*type
 
 	return &result, nil
 }
+
+// SaveReportAnalysis 10. 保存工作汇报 AI 分析
+func (s *Service) SaveReportAnalysis(req *types.ReportAnalysaveRequest) (*types.ReportAnalysaveResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/report/analysave", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ReportAnalysaveResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ShareReport 11. 分享报告到消息
+func (s *Service) ShareReport(req *types.ReportShareRequest) (*types.ReportShareResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/report/share", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ReportShareResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}

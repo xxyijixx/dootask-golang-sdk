@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // File represents a file or folder in the system
 type File struct {
 	ID          int       `json:"id"`
@@ -21,6 +26,24 @@ type File struct {
 
 	// 权限相关
 	Permission *int `json:"permission,omitempty"` // 权限级别
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (f *File) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []File
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*f = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	type fileAlias File
+	var obj fileAlias
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*f = File(obj)
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal File")
 }
 
 // FileListRequest represents the request for file list
@@ -141,6 +164,23 @@ type FileLink struct {
 	Code        string `json:"code"`
 	URL         string `json:"url"`
 	GuestAccess int    `json:"guest_access"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (f *FileLink) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []FileLink
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*f = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj FileLink
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*f = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal FileLink")
 }
 
 // FileContent represents file content data

@@ -3,6 +3,7 @@ package file
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	nethtp "net/http"
 	"net/url"
 	"strconv"
@@ -271,16 +272,18 @@ func (s *Service) Content(id interface{}, onlyUpdateAt, down *string, historyID 
 
 	// 仅获取更新时间
 	if onlyUpdateAt != nil && *onlyUpdateAt == "yes" {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body: %w", err)
+		}
+
 		var result struct {
 			Ret  int    `json:"ret"`
 			Msg  string `json:"msg"`
-			Data struct {
-				ID       int    `json:"id"`
-				UpdateAt string `json:"update_at"`
-			} `json:"data"`
+			Data json.RawMessage `json:"data"`
 		}
 
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		if err := json.Unmarshal(body, &result); err != nil {
 			return nil, err
 		}
 
@@ -288,7 +291,25 @@ func (s *Service) Content(id interface{}, onlyUpdateAt, down *string, historyID 
 			return nil, fmt.Errorf("API error: %s", result.Msg)
 		}
 
-		return result.Data, nil
+		// 尝试解析为数组（取第一个元素）
+		var arr []struct {
+			ID       int    `json:"id"`
+			UpdateAt string `json:"update_at"`
+		}
+		if err := json.Unmarshal(result.Data, &arr); err == nil && len(arr) > 0 {
+			return arr[0], nil
+		}
+
+		// 尝试解析为对象
+		var obj struct {
+			ID       int    `json:"id"`
+			UpdateAt string `json:"update_at"`
+		}
+		if err := json.Unmarshal(result.Data, &obj); err == nil {
+			return obj, nil
+		}
+
+		return nil, fmt.Errorf("cannot unmarshal FileContent onlyUpdateAt response")
 	}
 
 	// 返回文件内容（可能是文件数据、文本内容等）

@@ -813,3 +813,321 @@ func (s *Service) GetLogLists(req *types.ProjectLogListsRequest) (*types.Project
 
 	return &result, nil
 }
+
+// ==================== 项目权限管理 ====================
+
+// GetProjectPermission 44. 获取项目权限设置
+func (s *Service) GetProjectPermission(req *types.ProjectPermissionRequest) (*types.ProjectPermissionResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/permission", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectPermissionResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// UpdateProjectPermission 45. 项目权限设置
+func (s *Service) UpdateProjectPermission(req *types.ProjectPermissionUpdateRequest) (*types.ProjectPermissionUpdateResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/permission/update", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectPermissionUpdateResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ==================== 标签管理 ====================
+
+// GetProjectTagList 47. 标签列表
+func (s *Service) GetProjectTagList(req *types.ProjectTagListRequest) (*types.ProjectTagListResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/tag/list", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTagListResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SaveProjectTag 48. 保存标签
+func (s *Service) SaveProjectTag(req *types.ProjectTagSaveRequest) (*types.ProjectTagSaveResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/tag/save", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTagSaveResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SortProjectTag 49. 标签排序
+func (s *Service) SortProjectTag(req *types.ProjectTagSortRequest) (*types.ProjectTagSortResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/tag/sort", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTagSortResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// DeleteProjectTag 46. 删除标签
+func (s *Service) DeleteProjectTag(req *types.ProjectTagDeleteRequest) (*types.ProjectTagDeleteResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/tag/delete", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTagDeleteResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ==================== 任务历史与关联 ====================
+
+// GetTaskContentHistory 50. 获取任务详细历史描述
+func (s *Service) GetTaskContentHistory(req *types.ProjectTaskContentHistoryRequest) (*types.ProjectTaskContentHistoryResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/content_history", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskContentHistoryResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// CopyTask 51. 复制任务
+func (s *Service) CopyTask(req *types.ProjectTaskCopyRequest) (*types.ProjectTaskCopyResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/task/copy", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskCopyResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetTaskRelated 52. 获取任务关联任务列表
+func (s *Service) GetTaskRelated(req *types.ProjectTaskRelatedRequest) (*types.ProjectTaskRelatedResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/related", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskRelatedResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetTaskSubdata 53. 获取子任务数据
+func (s *Service) GetTaskSubdata(req *types.ProjectTaskSubdataRequest) (*types.ProjectTaskSubdataResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/subdata", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskSubdataResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ==================== 任务模板管理 ====================
+
+// GetTaskTemplateList 56. 任务模板列表
+func (s *Service) GetTaskTemplateList(req *types.ProjectTaskTemplateListRequest) (*types.ProjectTaskTemplateListResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/template_list", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskTemplateListResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SaveTaskTemplate 57. 保存任务模板
+func (s *Service) SaveTaskTemplate(req *types.ProjectTaskTemplateSaveRequest) (*types.ProjectTaskTemplateSaveResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/task/template_save", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskTemplateSaveResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SortTaskTemplate 58. 排序任务模板
+func (s *Service) SortTaskTemplate(req *types.ProjectTaskTemplateSortRequest) (*types.ProjectTaskTemplateSortResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/task/template_sort", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskTemplateSortResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// DeleteTaskTemplate 55. 删除任务模板
+func (s *Service) DeleteTaskTemplate(req *types.ProjectTaskTemplateDeleteRequest) (*types.ProjectTaskTemplateDeleteResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/template_delete", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskTemplateDeleteResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SetTaskTemplateDefault 54. 设置(取消)任务模板为默认
+func (s *Service) SetTaskTemplateDefault(req *types.ProjectTaskTemplateDefaultRequest) (*types.ProjectTaskTemplateDefaultResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/template_default", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskTemplateDefaultResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ==================== 任务操作 ====================
+
+// UpgradeTask 59. 子任务升级为主任务
+func (s *Service) UpgradeTask(req *types.ProjectTaskUpgradeRequest) (*types.ProjectTaskUpgradeResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/project/task/upgrade", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectTaskUpgradeResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ==================== 项目排序 ====================
+
+// SortProjectUser 60. 项目列表排序
+func (s *Service) SortProjectUser(req *types.ProjectUserSortRequest) (*types.ProjectUserSortResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/project/user/sort", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.ProjectUserSortResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}

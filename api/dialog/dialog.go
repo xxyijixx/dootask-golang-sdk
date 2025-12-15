@@ -775,3 +775,489 @@ func (s *Service) PushOkrInfo(req *types.PushOkrInfoRequest) (*types.PushOkrInfo
 
 	return &result, nil
 }
+
+// GetDialogBeyond 43.列表外对话
+func (s *Service) GetDialogBeyond(req *types.DialogBeyondRequest) (*types.DialogBeyondResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/beyond", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogBeyondResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetDialogCommonList 44.共同群组群聊
+func (s *Service) GetDialogCommonList(req *types.DialogCommonListRequest) (*types.DialogCommonListResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/common/list", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogCommonListResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetDialogConfig 45.获取会话配置
+func (s *Service) GetDialogConfig(req *types.DialogConfigRequest) (*types.DialogConfigResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/config", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogConfigResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SaveDialogConfig 46.保存会话配置
+func (s *Service) SaveDialogConfig(req *types.DialogConfigSaveRequest) (*types.DialogConfigSaveResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/config/save", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogConfigSaveResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// HideDialog 47.会话隐藏
+func (s *Service) HideDialog(req *types.DialogHideRequest) (*types.DialogHideResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/hide", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogHideResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SetMessageChecked 48.设置消息checked
+func (s *Service) SetMessageChecked(req *types.MessageCheckedRequest) (*types.MessageCheckedResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/checked", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageCheckedResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// ConvertRecord 49.录音转文字
+func (s *Service) ConvertRecord(req *types.MessageConvertRecordRequest) (*types.MessageConvertRecordResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/convertrecord", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageConvertRecordResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// RemoveMessageDot 50.聊天消息去除点
+func (s *Service) RemoveMessageDot(req *types.MessageDotRequest) (*types.MessageDotResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/dot", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageDotResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetMessageLatest 51.获取最新消息列表
+func (s *Service) GetMessageLatest(req *types.MessageLatestRequest) (*types.MessageLatestResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/latest", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageLatestResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendBotMessage 52.发送机器人消息
+func (s *Service) SendBotMessage(req *types.MessageSendBotRequest) (*types.MessageSendBotResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/sendbot", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageSendBotResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendLocationMessage 53.发送位置消息
+func (s *Service) SendLocationMessage(req *types.MessageSendLocationRequest) (*types.MessageSendLocationResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/sendlocation", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageSendLocationResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendNoticeMessage 54.发送通知
+func (s *Service) SendNoticeMessage(req *types.MessageSendNoticeRequest) (*types.MessageSendNoticeResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/sendnotice", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageSendNoticeResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendTaskByID 55.通过任务ID发送任务
+func (s *Service) SendTaskByID(req *types.MessageSendTaskIDRequest) (*types.MessageSendTaskIDResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/sendtaskid", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageSendTaskIDResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendTemplateMessage 56.发送模板消息
+func (s *Service) SendTemplateMessage(req *types.MessageSendTemplateRequest) (*types.MessageSendTemplateResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/sendtemplate", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageSendTemplateResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// TopMessage 57.置顶/取消置顶
+func (s *Service) TopMessage(req *types.MessageTopRequest) (*types.MessageTopResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/top", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageTopResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetMessageTopInfo 58.获取置顶消息
+func (s *Service) GetMessageTopInfo(req *types.MessageTopInfoRequest) (*types.MessageTopInfoResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/topinfo", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageTopInfoResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// TranslateMessage 59.翻译消息
+func (s *Service) TranslateMessage(req *types.MessageTranslationRequest) (*types.MessageTranslationResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/translation", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageTranslationResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// Voice2Text 60.语音消息转文字
+func (s *Service) Voice2Text(req *types.MessageVoice2TextRequest) (*types.MessageVoice2TextResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/msg/voice2text", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageVoice2TextResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// VoteMessage 61.发起投票
+func (s *Service) VoteMessage(req *types.MessageVoteRequest) (*types.MessageVoteResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/vote", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageVoteResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SendWordChainMessage 62.发送接龙消息
+func (s *Service) SendWordChainMessage(req *types.MessageWordChainRequest) (*types.MessageWordChainResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/msg/wordchain", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.MessageWordChainResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// OpenDialogEvent 63.打开会话事件
+func (s *Service) OpenDialogEvent(req *types.DialogOpenEventRequest) (*types.DialogOpenEventResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/open/event", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogOpenEventResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SearchTagDialog 64.搜索标注会话
+func (s *Service) SearchTagDialog(req *types.DialogSearchTagRequest) (*types.DialogSearchTagResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/search/tag", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogSearchTagResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// CreateDialogSession 65.AI-开启新会话
+func (s *Service) CreateDialogSession(req *types.DialogSessionCreateRequest) (*types.DialogSessionCreateResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/session/create", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogSessionCreateResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// GetDialogSessionList 66.AI-获取会话列表
+func (s *Service) GetDialogSessionList(req *types.DialogSessionListRequest) (*types.DialogSessionListResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/session/list", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogSessionListResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// OpenDialogSession 67.AI-打开会话
+func (s *Service) OpenDialogSession(req *types.DialogSessionOpenRequest) (*types.DialogSessionOpenResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/session/open", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogSessionOpenResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// RenameDialogSession 68.AI-重命名会话
+func (s *Service) RenameDialogSession(req *types.DialogSessionRenameRequest) (*types.DialogSessionRenameResponse, error) {
+	resp, err := s.client.DoRequest("POST", "/api/dialog/session/rename", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogSessionRenameResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}
+
+// SearchSticker 69.搜索在线表情
+func (s *Service) SearchSticker(req *types.DialogStickerSearchRequest) (*types.DialogStickerSearchResponse, error) {
+	resp, err := s.client.DoRequest("GET", "/api/dialog/sticker/search", req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result types.DialogStickerSearchResponse
+	err = ihttp.ParseAPIResponse(resp, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("API error: %s", err.Error())
+	}
+
+	return &result, nil
+}

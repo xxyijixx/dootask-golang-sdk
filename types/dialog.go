@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // DialogItem 对话项结构
 type DialogItem struct {
 	// 基础字段
@@ -48,9 +53,9 @@ type DialogItem struct {
 	DialogDelete *int          `json:"dialog_delete"` // 是否删除
 
 	// 用户聊天特有字段
-	Email     *string `json:"email"`      // 用户邮箱（私聊时）
-	Userimg   *string `json:"userimg"`    // 用户头像（私聊时）
-	IsDisable *bool   `json:"is_disable"` // 是否禁用（私聊时）
+	Email     *string     `json:"email"`      // 用户邮箱（私聊时）
+	Userimg   *string     `json:"userimg"`    // 用户头像（私聊时）
+	IsDisable *BoolFromInt `json:"is_disable"` // 是否禁用（私聊时）
 
 	// 消息类型标记
 	HasTag   *bool `json:"has_tag"`   // 是否有标签消息
@@ -124,10 +129,10 @@ type MessageItem struct {
 	// 扩展字段
 	Mention    *int    `json:"mention,omitempty"` // 是否@我
 	Dot        *int    `json:"dot,omitempty"`     // 是否有点标记
-	ReadAt     *string `json:"read_at,omitempty"` // 阅读时间
-	Percentage int     `json:"percentage"`        // 阅读占比
-	TodoDone   bool    `json:"todo_done"`         // 待办是否完成
-	NextID     int     `json:"next_id"`           // 下一条消息ID
+	ReadAt     *string     `json:"read_at,omitempty"` // 阅读时间
+	Percentage int         `json:"percentage"`        // 阅读占比
+	TodoDone   BoolFromInt `json:"todo_done"`         // 待办是否完成
+	NextID     int         `json:"next_id"`           // 下一条消息ID
 	PrevID     int     `json:"prev_id"`           // 上一条消息ID
 }
 
@@ -291,10 +296,28 @@ type ReadMessageRequest struct {
 	DialogID int `json:"dialog_id"` // 对话ID
 }
 
+// ReadMessageResponse 支持数组和对象两种格式
 type ReadMessageResponse struct {
 	Read       int `json:"read"`       // 已读数量
 	Send       int `json:"send"`       // 发送总数
 	Percentage int `json:"percentage"` // 阅读百分比
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReadMessageResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReadMessageResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReadMessageResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReadMessageResponse")
 }
 
 // 13. 获取未读消息数据
@@ -515,7 +538,25 @@ type CreateGroupRequest struct {
 	UserIDs  []int  `json:"userids"`             // 群成员ID列表
 }
 
+// CreateGroupResponse 支持数组和对象两种格式
 type CreateGroupResponse DialogItem
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (c *CreateGroupResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []DialogItem
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*c = CreateGroupResponse(arr[0])
+		return nil
+	}
+	// 尝试解析为对象
+	var obj DialogItem
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*c = CreateGroupResponse(obj)
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal CreateGroupResponse")
+}
 
 // 35. 修改群组
 type EditGroupRequest struct {
@@ -600,4 +641,329 @@ type PushOkrInfoRequest struct {
 
 type PushOkrInfoResponse struct {
 	Success bool `json:"success"`
+}
+
+// ============================ 新增接口类型定义 ============================
+
+// 43. 列表外对话
+type DialogBeyondRequest struct {
+	UnreadAt string `json:"unread_at,omitempty"` // 在这个时间之前未读的数据
+	TodoAt   string `json:"todo_at,omitempty"`   // 在这个时间之前待办的数据
+}
+
+type DialogBeyondResponse []DialogItem
+
+// 44. 共同群组群聊
+type DialogCommonListRequest struct {
+	UserID int `json:"user_id"` // 用户ID
+}
+
+type DialogCommonListResponse []DialogItem
+
+// 45. 获取会话配置
+type DialogConfigRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	Type     string `json:"type"`      // 配置类型
+}
+
+type DialogConfigResponse struct {
+	Value *string `json:"value"` // 配置值
+}
+
+// 46. 保存会话配置
+type DialogConfigSaveRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	Type     string `json:"type"`      // 配置类型
+	Value    string `json:"value"`     // 配置值
+}
+
+// DialogConfigSaveResponse 支持数组和对象两种格式
+type DialogConfigSaveResponse struct {
+	Success bool `json:"success"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (d *DialogConfigSaveResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []DialogConfigSaveResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*d = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj DialogConfigSaveResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*d = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal DialogConfigSaveResponse")
+}
+
+// 47. 会话隐藏
+type DialogHideRequest struct {
+	DialogID int `json:"dialog_id"` // 会话ID
+}
+
+type DialogHideResponse struct {
+	ID   int `json:"id"`   // 会话ID
+	Hide int `json:"hide"` // 隐藏状态：1=隐藏
+}
+
+// 48. 设置消息checked
+type MessageCheckedRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+	MsgID    int `json:"msg_id"`    // 消息ID
+}
+
+type MessageCheckedResponse struct {
+	Success bool `json:"success"`
+}
+
+// 49. 录音转文字
+type MessageConvertRecordRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	MsgID    int    `json:"msg_id"`    // 消息ID
+	Text     string `json:"text"`      // 文字内容
+}
+
+type MessageConvertRecordResponse MessageItem
+
+// 50. 聊天消息去除点
+type MessageDotRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+	MsgID    int `json:"msg_id"`    // 消息ID
+}
+
+type MessageDotResponse struct {
+	Success bool `json:"success"`
+}
+
+// 51. 获取最新消息列表
+type MessageLatestRequest struct {
+	DialogID int `json:"dialog_id"`      // 对话ID
+	Take     int `json:"take,omitempty"` // 获取条数，默认50
+}
+
+// MessageLatestResponse 支持数组和对象两种格式
+type MessageLatestResponse []MessageItem
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (m *MessageLatestResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组
+	var arr []MessageItem
+	if err := json.Unmarshal(data, &arr); err == nil {
+		*m = arr
+		return nil
+	}
+	// 尝试解析为对象（单个元素）
+	var obj MessageItem
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*m = []MessageItem{obj}
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal MessageLatestResponse")
+}
+
+// 52. 发送机器人消息
+type MessageSendBotRequest struct {
+	DialogID  int    `json:"dialog_id"`            // 对话ID
+	Text      string `json:"text"`                 // 消息内容
+	ModelName string `json:"model_name,omitempty"` // 模型名称
+}
+
+type MessageSendBotResponse MessageItem
+
+// 53. 发送位置消息
+type MessageSendLocationRequest struct {
+	DialogID int     `json:"dialog_id"` // 对话ID
+	Lat      float64 `json:"lat"`       // 纬度
+	Lng      float64 `json:"lng"`       // 经度
+	Address  string  `json:"address"`   // 地址
+}
+
+type MessageSendLocationResponse MessageItem
+
+// 54. 发送通知
+type MessageSendNoticeRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	Text     string `json:"text"`      // 通知内容
+}
+
+type MessageSendNoticeResponse MessageItem
+
+// 55. 通过任务ID发送任务
+type MessageSendTaskIDRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+	TaskID   int `json:"task_id"`   // 任务ID
+}
+
+type MessageSendTaskIDResponse MessageItem
+
+// 56. 发送模板消息
+type MessageSendTemplateRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	Template string `json:"template"`  // 模板内容
+}
+
+type MessageSendTemplateResponse MessageItem
+
+// 57. 置顶/取消置顶
+type MessageTopRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+	MsgID    int `json:"msg_id"`    // 消息ID
+}
+
+type MessageTopResponse struct {
+	ID    int     `json:"id"`     // 消息ID
+	TopAt *string `json:"top_at"` // 置顶时间，null表示取消置顶
+}
+
+// 58. 获取置顶消息
+type MessageTopInfoRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+}
+
+type MessageTopInfoResponse MessageItem
+
+// 59. 翻译消息
+type MessageTranslationRequest struct {
+	DialogID int    `json:"dialog_id"`      // 对话ID
+	MsgID    int    `json:"msg_id"`         // 消息ID
+	Lang     string `json:"lang,omitempty"` // 目标语言
+}
+
+type MessageTranslationResponse struct {
+	Text string `json:"text"` // 翻译后的文本
+}
+
+// 60. 语音消息转文字
+type MessageVoice2TextRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+	MsgID    int `json:"msg_id"`    // 消息ID
+}
+
+type MessageVoice2TextResponse struct {
+	Text string `json:"text"` // 转换后的文本
+}
+
+// 61. 发起投票
+type MessageVoteRequest struct {
+	DialogID int      `json:"dialog_id"` // 对话ID
+	Title    string   `json:"title"`     // 投票标题
+	Options  []string `json:"options"`   // 选项列表
+}
+
+type MessageVoteResponse MessageItem
+
+// 62. 发送接龙消息
+type MessageWordChainRequest struct {
+	DialogID int    `json:"dialog_id"` // 对话ID
+	Text     string `json:"text"`      // 接龙内容
+}
+
+type MessageWordChainResponse MessageItem
+
+// 63. 打开会话事件
+type DialogOpenEventRequest struct {
+	DialogID int `json:"dialog_id"` // 对话ID
+}
+
+type DialogOpenEventResponse struct {
+	Success bool `json:"success"`
+}
+
+// 64. 搜索标注会话
+type DialogSearchTagRequest struct {
+	Key  string `json:"key,omitempty"`  // 搜索关键词
+	Take int    `json:"take,omitempty"` // 返回数量，默认20
+}
+
+type DialogSearchTagResponse []DialogItem
+
+// 65. AI-开启新会话
+type DialogSessionCreateRequest struct {
+	Name string `json:"name,omitempty"` // 会话名称
+}
+
+type DialogSessionCreateResponse struct {
+	ID   int    `json:"id"`   // 会话ID
+	Name string `json:"name"` // 会话名称
+}
+
+// 66. AI-获取会话列表
+type DialogSessionListRequest struct {
+	Page     int `json:"page,omitempty"`     // 页码，默认1
+	PageSize int `json:"pagesize,omitempty"` // 每页数量，默认20
+}
+
+type DialogSessionListResponse struct {
+	CurrentPage  int                 `json:"current_page"`
+	Data         []DialogSessionItem `json:"data"`
+	FirstPageUrl *string             `json:"first_page_url"`
+	From         *int                `json:"from"`
+	LastPage     int                 `json:"last_page"`
+	LastPageUrl  *string             `json:"last_page_url"`
+	Links        []interface{}       `json:"links"`
+	NextPageUrl  *string             `json:"next_page_url"`
+	Path         string              `json:"path"`
+	PerPage      int                 `json:"per_page"`
+	PrevPageUrl  *string             `json:"prev_page_url"`
+	To           *int                `json:"to"`
+	Total        int                 `json:"total"`
+}
+
+type DialogSessionItem struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+// 67. AI-打开会话
+type DialogSessionOpenRequest struct {
+	SessionID int `json:"session_id"` // 会话ID
+}
+
+type DialogSessionOpenResponse DialogItem
+
+// 68. AI-重命名会话
+type DialogSessionRenameRequest struct {
+	SessionID int    `json:"session_id"` // 会话ID
+	Name      string `json:"name"`       // 新名称
+}
+
+type DialogSessionRenameResponse struct {
+	ID   int    `json:"id"`   // 会话ID
+	Name string `json:"name"` // 新名称
+}
+
+// 69. 搜索在线表情
+type DialogStickerSearchRequest struct {
+	Key string `json:"key"` // 搜索关键词
+}
+
+// DialogStickerSearchResponse 支持数组和对象两种格式
+type DialogStickerSearchResponse []StickerItem
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (d *DialogStickerSearchResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组
+	var arr []StickerItem
+	if err := json.Unmarshal(data, &arr); err == nil {
+		*d = arr
+		return nil
+	}
+	// 尝试解析为对象（单个元素）
+	var obj StickerItem
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*d = []StickerItem{obj}
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal DialogStickerSearchResponse")
+}
+
+type StickerItem struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }

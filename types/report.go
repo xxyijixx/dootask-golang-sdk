@@ -1,5 +1,10 @@
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // ==================== 报告管理相关 ====================
 
 // ReportMyRequest 01. 我发送的汇报
@@ -10,7 +15,19 @@ type ReportMyRequest struct {
 }
 
 type ReportMyResponse struct {
-	Data []ReportInfo `json:"data"`
+	CurrentPage  int           `json:"current_page"`
+	Data         []ReportInfo  `json:"data"`
+	FirstPageUrl *string       `json:"first_page_url,omitempty"`
+	From         *int          `json:"from,omitempty"`
+	LastPage     int           `json:"last_page"`
+	LastPageUrl  *string       `json:"last_page_url,omitempty"`
+	Links        []interface{} `json:"links,omitempty"`
+	NextPageUrl  *string       `json:"next_page_url,omitempty"`
+	Path         string        `json:"path"`
+	PerPage      int           `json:"per_page"`
+	PrevPageUrl  *string       `json:"prev_page_url,omitempty"`
+	To           *int          `json:"to,omitempty"`
+	Total        int           `json:"total"`
 }
 
 // ReportReceiveRequest 02. 我接收的汇报
@@ -22,7 +39,19 @@ type ReportReceiveRequest struct {
 }
 
 type ReportReceiveResponse struct {
-	Data []ReportInfo `json:"data"`
+	CurrentPage  int           `json:"current_page"`
+	Data         []ReportInfo  `json:"data"`
+	FirstPageUrl *string       `json:"first_page_url,omitempty"`
+	From         *int          `json:"from,omitempty"`
+	LastPage     int           `json:"last_page"`
+	LastPageUrl  *string       `json:"last_page_url,omitempty"`
+	Links        []interface{} `json:"links,omitempty"`
+	NextPageUrl  *string       `json:"next_page_url,omitempty"`
+	Path         string        `json:"path"`
+	PerPage      int           `json:"per_page"`
+	PrevPageUrl  *string       `json:"prev_page_url,omitempty"`
+	To           *int          `json:"to,omitempty"`
+	Total        int           `json:"total"`
 }
 
 // ReportDetailRequest 05. 报告详情
@@ -30,8 +59,24 @@ type ReportDetailRequest struct {
 	ReportID int `json:"report_id"` // 报告ID
 }
 
-type ReportDetailResponse struct {
-	Data ReportDetail `json:"data"`
+// ReportDetailResponse 支持数组和对象两种格式
+type ReportDetailResponse ReportDetail
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportDetailResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportDetail
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = ReportDetailResponse(arr[0])
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportDetail
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = ReportDetailResponse(obj)
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportDetailResponse")
 }
 
 // ReportStoreRequest 03. 保存并发送工作汇报
@@ -44,8 +89,24 @@ type ReportStoreRequest struct {
 	SendAt    string `json:"send_at,omitempty"`   // 发送时间，格式: YYYY-MM-DD HH:mm:ss
 }
 
-type ReportStoreResponse struct {
-	Data ReportDetail `json:"data"`
+// ReportStoreResponse 支持数组和对象两种格式
+type ReportStoreResponse ReportDetail
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportStoreResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportDetail
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = ReportStoreResponse(arr[0])
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportDetail
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = ReportStoreResponse(obj)
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportStoreResponse")
 }
 
 // ReportTemplateRequest 04. 生成汇报模板
@@ -54,9 +115,7 @@ type ReportTemplateRequest struct {
 	Time string `json:"time"` // 时间，格式: YYYY-MM-DD
 }
 
-type ReportTemplateResponse struct {
-	Data ReportTemplate `json:"data"`
-}
+type ReportTemplateResponse ReportTemplate
 
 // ReportMarkRequest 06. 标记已读/未读
 type ReportMarkRequest struct {
@@ -64,8 +123,26 @@ type ReportMarkRequest struct {
 	Type     string `json:"type"`      // 操作类型: read(已读), unread(未读)
 }
 
+// ReportMarkResponse 支持数组和对象两种格式
 type ReportMarkResponse struct {
 	Data interface{} `json:"data"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportMarkResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportMarkResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportMarkResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportMarkResponse")
 }
 
 // ReportReadRequest 09. 批量标记汇报已读
@@ -73,8 +150,26 @@ type ReportReadRequest struct {
 	ReportIDs []int `json:"report_ids"` // 报告ID数组
 }
 
+// ReportReadResponse 支持数组和对象两种格式
 type ReportReadResponse struct {
 	Data interface{} `json:"data"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportReadResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportReadResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportReadResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportReadResponse")
 }
 
 // ReportUnreadRequest 08. 获取未读
@@ -82,18 +177,14 @@ type ReportUnreadRequest struct {
 	Type string `json:"type,omitempty"` // 报告类型: day(日报), week(周报), month(月报)，不传则全部
 }
 
-type ReportUnreadResponse struct {
-	Data UnreadInfo `json:"data"`
-}
+type ReportUnreadResponse UnreadInfo
 
 // ReportLastSubmitterRequest 07. 获取最后一次提交的接收人
 type ReportLastSubmitterRequest struct {
 	Type string `json:"type"` // 报告类型: day(日报), week(周报), month(月报)
 }
 
-type ReportLastSubmitterResponse struct {
-	Data []User `json:"data"`
-}
+type ReportLastSubmitterResponse []User
 
 // ==================== 报告相关数据结构 ====================
 
@@ -172,3 +263,61 @@ type UnreadInfo struct {
 }
 
 // User 用户信息（已在 common.go 中定义，这里用于类型引用）
+
+// ==================== 新增接口类型定义 ====================
+
+// ReportAnalysaveRequest 10. 保存工作汇报 AI 分析
+type ReportAnalysaveRequest struct {
+	ReportID int    `json:"report_id"` // 报告ID
+	Content  string `json:"content"`   // AI分析内容
+}
+
+// ReportAnalysaveResponse 支持数组和对象两种格式
+type ReportAnalysaveResponse struct {
+	Success bool `json:"success"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportAnalysaveResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportAnalysaveResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportAnalysaveResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportAnalysaveResponse")
+}
+
+// ReportShareRequest 11. 分享报告到消息
+type ReportShareRequest struct {
+	ReportID int `json:"report_id"` // 报告ID
+	DialogID int `json:"dialog_id"` // 对话ID
+}
+
+// ReportShareResponse 支持数组和对象两种格式
+type ReportShareResponse struct {
+	Success bool `json:"success"`
+}
+
+// UnmarshalJSON 自定义解析，支持数组和对象格式
+func (r *ReportShareResponse) UnmarshalJSON(data []byte) error {
+	// 尝试解析为数组（取第一个元素）
+	var arr []ReportShareResponse
+	if err := json.Unmarshal(data, &arr); err == nil && len(arr) > 0 {
+		*r = arr[0]
+		return nil
+	}
+	// 尝试解析为对象
+	var obj ReportShareResponse
+	if err := json.Unmarshal(data, &obj); err == nil {
+		*r = obj
+		return nil
+	}
+	return fmt.Errorf("cannot unmarshal ReportShareResponse")
+}
